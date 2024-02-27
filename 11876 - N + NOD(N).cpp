@@ -1,75 +1,55 @@
-/**
- *    Author  : Tanbin_Hasan
- *    Created : 03.01.2021
-**/
-
 #include <bits/stdc++.h>
 
-using namespace std ;
+#define int long long
+#define ll __int128_t
 
-typedef int_fast64_t ll ;
+using namespace std;
 
-vector <int> SOE(ll n)
-{
-    vector <int> prime ;
-    vector <ll> check((n >> 6) + 1 , 0) ;
-    check[0] |= (1LL << 0) ;
-    check[0] |= (1LL << 1) ;
-    for(ll i = 4 ; i <= n ; i += 2)
-        check[i >> 6] |= (1LL << (i & 63)) ;
-    for(ll i = 3 ; i * i <= n ; i += 2)
-        if(!(check[i >> 6] & (1LL << (i & 63))))
-            for(ll j = i * i ; j <= n ; j += 2 * i)
-                check[j >> 6] |= (1LL << (j & 63)) ;
-    prime.push_back(2) ;
-    for(ll i = 3 ; i <= n ; i += 2)
-        if(!(check[i >> 6] & (1LL << (i & 63))))
-            prime.push_back(i) ;
-    return prime ;
-}
-vector <int> NOD(void)
-{
-    auto prime = SOE(1002) ;
-    vector <int> nod((int)1e6 + 2 , 1) , n((int)1e6 + 2) ;
-    for(int i = 0 ; i <= 1e6 ; ++i) n[i] = i ;
-    for(auto &p : prime)
-    {
-        for(int i = p ; i <= 1e6 ; i += p)
-        {
-            if(p * p > n[i]) continue ;
-            int cnt = 1 ;
-            while(!(n[i] % p))
-            {
-                n[i] /= p ;
-                ++cnt ;
-            }
-            nod[i] *= cnt ;
-        }
-    }
-    for(int i = 1 ; i <= 1e6 ; ++i)
-        if(n[i] > 1) nod[i] *= 2 ;
-    return nod ;
+template <int D, typename T>
+struct Vec : public vector<Vec<D - 1, T>> {
+  static_assert(D >= 1);
+  template <typename... Args>
+  Vec(int n = 0, Args... args) : vector<Vec<D - 1, T>>(n, Vec<D - 1, T>(args...)) {}
+};
+template <typename T>
+struct Vec<1, T> : public vector<T> {
+  Vec(int n = 0, const T& val = T()) : vector<T>(n, val) {}
+};
+
+mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
+
+const int lim = 1000001;
+vector<int> NOD(lim), N(2, 0);
+void PreCalc(void) {
+  for (int i = 1; i < lim; ++i) {
+    for (int j = i; j < lim; j += i) ++NOD[j];
+  }
+  N[1] = 1;
+  for (int i = 2; i < lim; ++i) {
+    int cur = N[i - 1] + NOD[N[i - 1]];
+    N.push_back(cur);
+    if (N.back() > lim) break;
+  }
 }
 
-int main(void)
-{
-    ios_base::sync_with_stdio(false) ; cin.tie(nullptr) ;
-    auto nod = NOD() ;
-    vector <int> n((int)1e6 + 1 , 0) ;
-    n[0] = 1 ;
-    for(int i = 1 ; i <= 1e6 ; ++i)
-        n[i] = n[i - 1] + nod[n[i - 1]] ;
+#define MultipleCase
+void Solve(__attribute__((unused)) int tc) {
+  cout << "Case " << tc << ": ";
+  int a, b;
+  cin >> a >> b;
+  int l = lower_bound(N.begin(), N.end(), a) - (N).begin();
+  int r = upper_bound(N.begin(), N.end(), b) - (N).begin() - 1;
+  cout << (r - l + 1) << '\n';
+}
 
-    int t ;
-    cin >> t ;
-    for(int tc = 1 ; tc <= t ; ++tc)
-    {
-        cout << "Case " << tc << ": " ;
-        int a , b ;
-        cin >> a >> b ;
-        int x = lower_bound(n.begin() , n.end() , a) - (n).begin() ;
-        int y = upper_bound(n.begin() , n.end() , b) - (n).begin() - 1 ;
-        cout << (y - x + 1) << '\n' ;
-    }
-    return 0 ;
+int32_t main(void) {
+  ios::sync_with_stdio(false);
+  cin.tie(0);
+  PreCalc();
+  int tt = 1, tc = 0;
+#ifdef MultipleCase
+  cin >> tt;
+#endif
+  while (tt--) Solve(++tc);
+  return 0;
 }
