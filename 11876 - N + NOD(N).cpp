@@ -18,17 +18,17 @@ struct Vec<1, T> : public vector<T> {
 
 mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 
-const int lim = 1000001;
-vector<int> NOD(lim), N(2, 0);
+const int MX = 1000001;
+vector<int> NOD(MX), N(2, 0);
 void PreCalc(void) {
-  for (int i = 1; i < lim; ++i) {
-    for (int j = i; j < lim; j += i) ++NOD[j];
+  for (int i = 1; i < MX; ++i) {
+    for (int j = i; j < MX; j += i) ++NOD[j];
   }
   N[1] = 1;
-  for (int i = 2; i < lim; ++i) {
+  for (int i = 2; i < MX; ++i) {
     int cur = N[i - 1] + NOD[N[i - 1]];
     N.push_back(cur);
-    if (N.back() > lim) break;
+    if (N.back() > MX) break;
   }
 }
 

@@ -4,15 +4,15 @@
 
 using namespace std;
 
-bitset<1201> check(3);
+bitset<1201> vis(3);
 vector<int> GenPrime(int n) {
   vector<int> prime(2, 1);
   prime[1] = 2;
   for (int i = 3; i <= n; i += 2) {
-    if (check[i]) continue;
+    if (vis[i]) continue;
     prime.push_back(i);
     for (int j = i * i; j <= n; j += 2 * i) {
-      check[j] = 1;
+      vis[j] = 1;
     }
   }
   return prime;
